@@ -29,15 +29,15 @@ It is designed as part of a technical test to demonstrate clean architecture, OO
 
 ### 🛠 Admin Controls
 Only admin users can:
-- **Deactivate accounts** (soft delete)
+- **Deactivate accounts**
 - **Reactivate accounts**
 - View user status
 
 User schema includes:
 - `createdAt`
 - `updatedAt`
-- `deletedAt`
 - `isActive`
+- `role`
 
 ---
 
@@ -86,8 +86,9 @@ User schema includes:
 | Update Profile | PATCH | `/api/updateProfile` |
 | View Messages | GET | `/api/viewMessages` |
 | Send Message | POST | `/api/sendMessage` |
-| (Admin) Deactivate | PATCH | `/api/admin/deactivate/:id` |
-| (Admin) Activate | PATCH | `/api/admin/activate/:id` |
+| Delete Account | POST | `/api/deleteAccount` |
+| (Admin) Deactivate Account | POST | `/api/deactivateAccount/:id` |
+| (Admin) Activate Account | POST | `/api/activateAccount/:id` |
 
 ---
 
@@ -96,3 +97,5 @@ User schema includes:
 ### 1. Install Dependencies
 ```sh
 npm install
+
+## Work Progress

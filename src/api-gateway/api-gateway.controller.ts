@@ -1,11 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Query } from '@nestjs/common';
 import { ApiGatewayService } from './api-gateway.service';
 import { loginDto } from 'src/auth/dto/login.dto';
 import { CreateMessageDto } from 'src/message/dto/create-message.dto';
 import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 import { SignUpDto } from 'src/auth/dto/signup.dto';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthGuard } from 'src/common/guards/auth.guard';
 import { Request } from 'express';
+import { AdminGuard } from 'src/common/guards/admin.guard';
 
 
 @Controller('api')
@@ -46,16 +47,43 @@ export class ApiGatewayController {
     return this.apiGatewayService.deleteAccount(req['user'])
   }
 
+  @UseGuards(AuthGuard, AdminGuard)
+  @Post('deactivateAccount/:id')
+  deactivateAccount(@Param('id') id: string) {
+    return this.apiGatewayService.deactivateAccount(id);
+  }
+
+  @UseGuards(AuthGuard, AdminGuard)
+  @Post('activateAccount/:id')
+  activateAccount(@Param('id') id: string) {
+    return this.apiGatewayService.activateAccount(id);
+  }
 
   @UseGuards(AuthGuard)
-  @Get('viewMessage')
-  viewMessage() {
-    return this.apiGatewayService.viewMessage();
+  @Get('viewMessages/:recipientId')
+  viewMessages(
+    @Param('recipientId') recipientId: string,
+    @Query('page') page: string,
+    @Req() req: Request,
+  ) {
+    return this.apiGatewayService.viewMessages(recipientId, req['user'], +page || 1);
   }
 
   @UseGuards(AuthGuard)
   @Post('sendMessage')
-  sendMessage(@Body() dto: CreateMessageDto) {
-    return this.apiGatewayService.sendMessage(dto);
+  sendMessage(@Body() dto: CreateMessageDto, @Req() req: Request) {
+    return this.apiGatewayService.sendMessage(dto, req['user']);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('getChatList')
+  getChatList(@Req() req: Request) {
+    return this.apiGatewayService.getChatList(req['user']);
+  }
+
+  @UseGuards(AuthGuard, AdminGuard)
+  @Get('user')
+  findAllUser() {
+    return this.apiGatewayService.findAllUser()
   }
 }

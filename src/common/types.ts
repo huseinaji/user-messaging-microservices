@@ -1,6 +1,7 @@
 export interface jwtPayload {
-    sub: string;
-    username: string;
+  sub: string;
+  username: string;
+  role: string;
 }
 
 export type ZodiacRange = {

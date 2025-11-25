@@ -12,6 +12,10 @@ import { UpdateUserDto } from 'src/user/dto/update-user.dto';
 export class ApiGatewayService {
   constructor(@Inject(PRODUCER_SERVICE) private readonly client: ClientProxy){}
 
+  findAllUser() {
+    return lastValueFrom(this.client.send({cmd: 'user:findAll'}, {}))
+  }
+
   async register(dto: SignUpDto) {
     return lastValueFrom(this.client.send({cmd: 'user:register'}, dto));
   }
@@ -20,8 +24,11 @@ export class ApiGatewayService {
     return lastValueFrom(this.client.send({cmd: 'user:login'}, dto));
   }
   async createProfile(dto: UpdateUserDto, user: jwtPayload) {
-    const newData = {...dto, ...user};
-    return lastValueFrom(this.client.send({cmd: 'user:createProfile'}, newData));
+    const payload = {
+      ...dto, 
+      sub: user.sub
+    };
+    return lastValueFrom(this.client.send({cmd: 'user:createProfile'}, payload));
   }
 
   async getProfile(data: jwtPayload) {
@@ -29,23 +36,49 @@ export class ApiGatewayService {
   }
 
   async updateProfile(dto: UpdateUserDto, user: jwtPayload) {
-    const newData = {...dto, ...user};
-    return lastValueFrom(this.client.send({cmd: 'user:udpateProfile'}, newData));
+    const payload = {
+      ...dto, 
+      sub: user.sub
+    };
+    return lastValueFrom(this.client.send({cmd: 'user:udpateProfile'}, payload));
   }
 
   async deleteAccount(data: jwtPayload) {
     return lastValueFrom(this.client.send({cmd: 'user:deleteAccount'}, data));
   }
   
-  async deactivateProfile(userId: string) {
-    return lastValueFrom(this.client.send({cmd: 'user:deleteAccount'}, userId));
+  async deactivateAccount(userId: string) {
+    return lastValueFrom(this.client.send({cmd: 'user:deactivateAccount'}, userId));
   }
 
-  viewMessage() {
-    return `This action returns all apiGateway`;
+  async activateAccount(userId: string) {
+    return lastValueFrom(this.client.send({cmd: 'user:activateAccount'}, userId));
   }
 
-  sendMessage(dto: CreateMessageDto) {
-    return `This action returns a #${dto} apiGateway`;
+  async viewMessages(otherUserId: string, user: jwtPayload, page = 1) {
+    return lastValueFrom(
+      this.client.send(
+        { cmd: 'message:viewMessage' },
+        { userId: user.sub, otherUserId, page },
+      ),
+    );
+  }
+
+  async sendMessage(dto: CreateMessageDto, user: jwtPayload) {
+    return lastValueFrom(
+      this.client.send(
+        { cmd: 'message:send' },
+        { senderId: user.sub, ...dto },
+      ),
+    );
+  }
+
+  async getChatList(userId: jwtPayload) {
+    return lastValueFrom(
+      this.client.send(
+        { cmd: 'message:getChatList' },
+        userId
+      )
+    )
   }
 }

@@ -3,8 +3,7 @@ import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './entities/user.entity';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { CONSUMER_SERVICE } from 'src/common/constant';
+import { AdminSeeder } from './admin.seeder';
 
 @Module({
   imports: [
@@ -13,7 +12,7 @@ import { CONSUMER_SERVICE } from 'src/common/constant';
     ])
   ],
   controllers: [UserController],
-  providers: [UserService],
+  providers: [UserService, AdminSeeder],
   exports: [UserService],
 })
 export class UserModule {}

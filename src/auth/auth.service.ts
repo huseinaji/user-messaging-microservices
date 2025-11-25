@@ -26,7 +26,7 @@ export class AuthService {
       if (!user) {
         throw new NotFoundException('User not found');
       }
-      
+
       if (!user.password) {
         throw new NotFoundException('User has no password set');
       }
@@ -34,13 +34,17 @@ export class AuthService {
       if (!user.isActive) {
         throw new UnauthorizedException('Account is deactivated');
       }
-      
+
       if (!await bcrypt.compare(dto.password, user.password)) {
         throw new NotFoundException('Invalid password');
       }
-      
-      const payload: jwtPayload = { sub: user._id.toString(), username: user.username };
-      console.log(payload)
+
+      const payload: jwtPayload = {
+        sub: user._id.toString(),
+        username: user.username,
+        role: user.role
+      };
+
       return {
         access_token: this.jwtService.sign(payload),
       };
@@ -48,11 +52,11 @@ export class AuthService {
       return error?.response;
     }
   }
-  
+
   async register(dto: SignUpDto) {
     return this.userService.create(dto);
   }
-  
+
   async logout() {
     return 'Logout successful';
   }

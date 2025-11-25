@@ -8,10 +8,15 @@ import { jwtPayload } from 'src/common/types';
 @Controller()
 export class UserController {
   constructor(private readonly userService: UserService) {}
+  @MessagePattern({cmd: 'user:findAll'})
+  findAll() {
+    return this.userService.findAll()
+  }
 
   @MessagePattern({cmd: 'user:createProfile'})
+  @MessagePattern({cmd: 'user:updateProfile'})
   createProfile(@Payload() data: any) {
-    return this.userService.createProfile(data);
+    return this.userService.upsertProfile(data);
   }
 
   @MessagePattern({cmd: "user:getProfile"})
@@ -19,23 +24,23 @@ export class UserController {
     return this.userService.getProfile(data)
   }
 
-  @MessagePattern({cmd: 'user:updateProfile'})
-  updateProfile(@Payload() data: any) {
-    return this.userService.updateProfile(data);
-  }
-
   @MessagePattern('updateUser')
   update(@Payload() dto: UpdateUserDto) {
     return this.userService.update(dto.id, dto);
   }
 
-  @MessagePattern('user:deleteAccount')
+  @MessagePattern({cmd: 'user:deleteAccount'})
   deleteAccount(@Payload() data: jwtPayload) {
     return this.userService.deleteAccount(data);
   }
 
-  @MessagePattern('user:deactivateProfile')
-  deactivateProfile(@Payload() userId: string) {
-    return this.userService.deactivateProfile(userId);
+  @MessagePattern({cmd: 'user:deactivateAccount'})
+  deactivateAccount(@Payload() userId: string) {
+    return this.userService.deactivateAccount(userId);
+  }
+
+  @MessagePattern({cmd: 'user:activateAccount'})
+  activateAccount(@Payload() userId: string) {
+    return this.userService.activateAccount(userId);
   }
 }
