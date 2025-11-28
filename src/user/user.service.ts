@@ -4,7 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './entities/user.entity';
 import { Model } from 'mongoose';
-import * as bcrypt from 'bcrypt-ts';
+import * as bcrypt from 'bcrypt';
 import { jwtPayload } from 'src/common/types';
 import { getHoroscope, getZodiac } from 'src/common/utils';
 

@@ -17,27 +17,18 @@ It is designed as part of a technical test to demonstrate clean architecture, OO
 ---
 
 ### 👤 User Profile
-- Create Profile (`/api/createProfile`)
-- Get Profile (`/api/getProfile`)
-- Update Profile (`/api/updateProfile`)
-  - Restricted fields cannot be modified by users: `isActive`, `role`, `deletedAt`
+- Auto generate admin user for the first time app running
 - Automatic calculation of:
   - **Western Zodiac**
   - **Chinese Horoscope** (based on Chinese New Year table)
-
+  every time birthday fulfilled
 ---
 
 ### 🛠 Admin Controls
 Only admin users can:
 - **Deactivate accounts**
 - **Reactivate accounts**
-- View user status
-
-User schema includes:
-- `createdAt`
-- `updatedAt`
-- `isActive`
-- `role`
+- **View user status**
 
 ---
 
@@ -45,6 +36,7 @@ User schema includes:
 - Text chat between User A ↔ User B
 - Messages stored in MongoDB
 - RabbitMQ triggers notification events when messages are received
+- IsRead Feature that change to true if messages are viewed by recipient (the default value is false)
 - Messaging runs in its own microservice
 - Endpoints:
   - View Messages (`/api/viewMessages`)
@@ -84,11 +76,12 @@ User schema includes:
 | Create Profile | POST | `/api/createProfile` |
 | Get Profile | GET | `/api/getProfile` |
 | Update Profile | PATCH | `/api/updateProfile` |
-| View Messages | GET | `/api/viewMessages` |
+| View Messages | GET | `/api/viewMessages/:recipientId` |
 | Send Message | POST | `/api/sendMessage` |
 | Delete Account | POST | `/api/deleteAccount` |
 | (Admin) Deactivate Account | POST | `/api/deactivateAccount/:id` |
 | (Admin) Activate Account | POST | `/api/activateAccount/:id` |
+| (Admin) Get All User | POST | `/api/user/` |
 
 ---
 

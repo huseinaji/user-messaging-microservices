@@ -1,7 +1,7 @@
 import { Injectable, OnModuleInit } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { User, UserDocument } from "./entities/user.entity";
-import * as bcrypt from 'bcrypt-ts'
+import * as bcrypt from 'bcrypt'
 import { Model } from "mongoose";
 
 @Injectable()

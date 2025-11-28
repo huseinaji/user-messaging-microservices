@@ -4,7 +4,7 @@ import { SignUpDto } from './dto/signup.dto';
 import { UserService } from 'src/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { isEmail } from 'class-validator';
-import * as bcrypt from 'bcrypt-ts';
+import * as bcrypt from 'bcrypt';
 import { jwtPayload } from 'src/common/types';
 
 @Injectable()
@@ -15,30 +15,8 @@ export class AuthService {
   ) {}
 
   async login(dto: loginDto) {
-    let user
     try {
-      if (isEmail(dto.emailOrUsername)) {
-        user = await this.userService.findByEmail(dto.emailOrUsername);
-      } else {
-        user = await this.userService.findByUsername(dto.emailOrUsername);
-      }
-
-      if (!user) {
-        throw new NotFoundException('User not found');
-      }
-
-      if (!user.password) {
-        throw new NotFoundException('User has no password set');
-      }
-
-      if (!user.isActive) {
-        throw new UnauthorizedException('Account is deactivated');
-      }
-
-      if (!await bcrypt.compare(dto.password, user.password)) {
-        throw new NotFoundException('Invalid password');
-      }
-
+      let user = await this.validateUser(dto)      
       const payload: jwtPayload = {
         sub: user._id.toString(),
         username: user.username,
@@ -59,5 +37,31 @@ export class AuthService {
 
   async logout() {
     return 'Logout successful';
+  }
+
+  private async validateUser(dto: loginDto) {
+    let user: any
+    if (isEmail(dto.emailOrUsername)) {
+        user = await this.userService.findByEmail(dto.emailOrUsername);
+      } else {
+        user = await this.userService.findByUsername(dto.emailOrUsername);
+      }
+
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      if (!user.password) {
+        throw new NotFoundException('User has no password set');
+      }
+
+      if (!user.isActive) {
+        throw new UnauthorizedException('Account is deactivated');
+      }
+
+      if (!await bcrypt.compare(dto.password, user.password)) {
+        throw new NotFoundException('Invalid password');
+      }
+      return user
   }
 }
